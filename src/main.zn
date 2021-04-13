@@ -1,0 +1,45 @@
+pub type Address = u160;
+pub type Balance = u248;
+
+pub const ADDR_ETH: Address = 0x0000000000000000000000000000000000000000;    
+
+contract Staking {
+    pub tick: u64;
+
+    pub fn new(tick: u64) -> Self {
+        Self {
+            tick: tick,
+        }
+    }
+
+    pub fn deposit(mut self) {
+        require(
+            zksync::msg.recipient == self.address,
+            "Transaction recipient is not the contract",
+        );
+
+        self.tick = self.tick + 1;
+    }
+
+    pub fn withdraw(mut self, amount: Balance) {
+
+        let (balance, _found) = self.balances.get(ADDR_ETH);
+        require(
+            balance > zksync::msg.amount,
+            "Not enough balance",
+        );
+
+        self.transfer(
+            zksync::msg.sender,
+            ADDR_ETH,
+            amount,
+        );
+
+        self.tick = self.tick + 1;
+    }
+}
+
+#[test]
+fn ordinar() {
+    require(2 + 2 == 4, "The laws of the Universe have been broken"); 
+}
